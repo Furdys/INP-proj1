@@ -9,15 +9,15 @@ port (
     RESET: in std_logic;
     SMCLK: in std_logic;
     -- Output
-    ROW: std_logic_vector(7 downto 0);
-    LED: std_logic_vector(7 downto 0)
+    ROW: out std_logic_vector(7 downto 0);
+    LED: out std_logic_vector(7 downto 0)
 );
 end ledc8x8;
 
 architecture main of ledc8x8 is
     signal active_row: std_logic_vector(7 downto 0);
     signal counter_enable: std_logic;
-    signal counter_value: std_logic_vector(21 downto 0);
+    signal counter_value: std_logic_vector (21 downto 0);
 
 begin
 
@@ -33,19 +33,20 @@ begin
     -- Nezapomente take doplnit mapovani signalu rozhrani na piny FPGA
     -- v souboru ledc8x8.ucf.
     
-    counter: process(RESET, SMCLK) -- dodelat
+    counter: process(RESET, SMCLK)
     begin
         if RESET = '1' then
-            counter_value <= "0000000000000000000000"; 
+            counter_value <= (others => '0');
         
         elsif rising_edge(SMCLK) then
-        
-            counter_value <= counter_value + 1;
+				counter_value <= counter_value + 1; 
             
-            if counter_value (7 downto 0) = "11111111" then 
+            if(counter_value(7 downto 0) = "11111111") then 
                 counter_enable <= '1';
+				--active_row <= "00100000"; -- DEBUG
             else 
                 counter_enable <= '0';
+				--active_row <= "00000100"; -- DEBUG
             end if;
             
         end if;            
@@ -54,13 +55,13 @@ begin
     
     
     
-    rotation: process(RESET, active_row)
+    rotation: process(RESET, SMCLK, counter_enable)
     begin
+		--row <= active_row; -- DEBUG
         if RESET = '1' then
-            -- ROW <= "10000000";
             active_row <= "10000000";
-        else -- elsif rising_edge(SMCLK) and cr_ce = '1' then
-            case active_row is
+        elsif rising_edge(SMCLK) and counter_enable = '1' then
+			case active_row is
                 when "10000000" => active_row <= "01000000";
                 when "01000000" => active_row <= "00100000";
                 when "00100000" => active_row <= "00010000";
@@ -71,8 +72,8 @@ begin
                 when "00000001" => active_row <= "10000000";
                 when others => null;
             end case;
-            ROW <= active_row;
         end if;
+		ROW <= active_row;
     end process rotation;
     
     decoder: process(active_row) --
