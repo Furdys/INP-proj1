@@ -72,14 +72,14 @@ begin
     decoder: process(active_row)
     begin
         case active_row is
-            when "10000000" => LED <= "00010111";
-            when "01000000" => LED <= "00010100";
-            when "00100000" => LED <= "00010100";
-            when "00010000" => LED <= "00010111";
-            when "00001000" => LED <= "00010100";
-            when "00000100" => LED <= "00010100";
-            when "00000010" => LED <= "10010100";
-            when "00000001" => LED <= "01100100";
+            when "00000001" => LED <= "00010111";
+            when "00000010" => LED <= "11010111";
+            when "00000100" => LED <= "11010111";
+            when "00001000" => LED <= "00010111";
+            when "00010000" => LED <= "11010111";
+            when "00100000" => LED <= "11010111";
+            when "01000000" => LED <= "11010110";
+            when "10000000" => LED <= "11011001";
             when others => LED <= "00000000";
         end case;
     end process decoder;
