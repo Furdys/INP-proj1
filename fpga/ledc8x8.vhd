@@ -36,7 +36,7 @@ begin
         if RESET = '1' then
             counter_value <= "00000000";  
 		elsif rising_edge(SMCLK) then
-            if counter_value(7 downto 0) = "11111111" then 
+            if counter_value = "11111111" then 
                 counter_enable <= '1';
 				counter_value <= "00000000"; 
             else 
@@ -53,7 +53,6 @@ begin
     begin
         if RESET = '1' then
             active_row <= "10000000";
-			ROW <= "10000000";
         elsif rising_edge(SMCLK) and counter_enable = '1' then
 			case active_row is
                 when "10000000" => active_row <= "01000000";
@@ -66,8 +65,8 @@ begin
                 when "00000001" => active_row <= "10000000";
                 when others => null;
             end case;
-			ROW <= active_row;
         end if;
+		ROW <= active_row;
     end process rotation;
     
     decoder: process(active_row)
